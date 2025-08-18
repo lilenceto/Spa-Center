@@ -1,128 +1,64 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "spa_center";
-$message = "";
+session_start();
+$mysqli = new mysqli("localhost","root","","spa_center");
+if ($mysqli->connect_error) die("DB грешка: ".$mysqli->connect_error);
+$mysqli->set_charset("utf8");
 
-// Връзка с базата
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Грешка при връзка: " . $conn->connect_error);
-}
+$error = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $name  = trim($_POST['name']);
+    $email = trim($_POST['email']);
+    $phone = trim($_POST['phone']);
+    $password = $_POST['password'];
+    $password2 = $_POST['password2'];
+    $next = $_POST['next'] ?? 'index.php';
 
-// Функция за проверка на телефон (само цифри, 10 знака)
-function valid_phone($phone) {
-    return preg_match('/^[0-9]{10}$/', $phone);
-}
-
-// Функция за проверка на име (само букви и интервали)
-function valid_name($name) {
-    return preg_match('/^[\p{L} ]+$/u', $name); // Unicode букви
-}
-
-// Ако формата е изпратена
-if ($_SERVER["REQUEST_METHOD"] == "POST") {
-    $name = trim($_POST["name"]);
-    $email = trim($_POST["email"]);
-    $phone = trim($_POST["phone"]);
-    $pass1 = $_POST["password"];
-    $pass2 = $_POST["confirm_password"];
-
-    // Валидация
-    if (!valid_name($name) || mb_strlen($name) < 3) {
-        $message = "Моля въведете валидно име (само букви, поне 3 символа)!";
-    } elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
-        $message = "Невалиден имейл!";
-    } elseif (!valid_phone($phone)) {
-        $message = "Телефонът трябва да съдържа точно 10 цифри!";
-    } elseif (strlen($pass1) < 6) {
-        $message = "Паролата трябва да е поне 6 символа!";
-    } elseif ($pass1 !== $pass2) {
-        $message = "Паролите не съвпадат!";
-    } else {
-        // Проверка за уникален имейл
-        $check_email = $conn->prepare("SELECT id FROM users WHERE email=?");
-        $check_email->bind_param("s", $email);
-        $check_email->execute();
-        $check_email->store_result();
-        if ($check_email->num_rows > 0) {
-            $message = "Този имейл вече е регистриран!";
+    if (strlen($name) < 2) $error = "Името е твърде късо.";
+    elseif (!filter_var($email, FILTER_VALIDATE_EMAIL)) $error = "Невалиден имейл.";
+    elseif (!preg_match('/^[0-9]{9,15}$/', $phone)) $error = "Телефонът трябва да съдържа само цифри (9–15).";
+    elseif ($password !== $password2) $error = "Паролите не съвпадат.";
+    else {
+        // проверка за вече съществуващ имейл
+        $stmt = $mysqli->prepare("SELECT id FROM users WHERE email=? LIMIT 1");
+        $stmt->bind_param("s",$email);
+        $stmt->execute(); $stmt->store_result();
+        if ($stmt->num_rows > 0) {
+            $error = "Имейлът вече е регистриран.";
         } else {
-            // Хеширане на паролата
-            $pass_hash = password_hash($pass1, PASSWORD_BCRYPT);
-
-            // Въвеждане в базата
-            $stmt = $conn->prepare("INSERT INTO users (name, email, password, phone) VALUES (?, ?, ?, ?)");
-            $stmt->bind_param("ssss", $name, $email, $pass_hash, $phone);
-
+            $hash = password_hash($password, PASSWORD_BCRYPT);
+            $role = 'client';
+            $stmt = $mysqli->prepare("INSERT INTO users (name,email,phone,password,role) VALUES (?,?,?,?,?)");
+            $stmt->bind_param("sssss",$name,$email,$phone,$hash,$role);
             if ($stmt->execute()) {
-                $message = "Регистрацията е успешна! Може да влезете.";
+                $uid = $stmt->insert_id;
+                // авто-логин
+                $_SESSION['user_id']=$uid;
+                $_SESSION['user_name']=$name;
+                $_SESSION['role']=$role;
+                if (preg_match('~^(https?:)?//~',$next)) $next="index.php";
+                header("Location: ".$next);
+                exit;
             } else {
-                $message = "Грешка при регистрация: " . $conn->error;
+                $error="Грешка при регистрация: ".$mysqli->error;
             }
         }
-        $check_email->close();
+        $stmt->close();
     }
 }
+require_once __DIR__.'/header.php';
 ?>
+<h2>Регистрация</h2>
+<?php if($error): ?><p style="color:red"><?=htmlspecialchars($error)?></p><?php endif; ?>
 
-<!DOCTYPE html>
-<html lang="bg">
-<head>
-    <meta charset="UTF-8">
-    <title>Регистрация</title>
-    <script>
-        // JS: Клиентска валидация
-        function validateForm() {
-            let name = document.forms["regForm"]["name"].value.trim();
-            let email = document.forms["regForm"]["email"].value.trim();
-            let phone = document.forms["regForm"]["phone"].value.trim();
-            let pass1 = document.forms["regForm"]["password"].value;
-            let pass2 = document.forms["regForm"]["confirm_password"].value;
-            let namePattern = /^[\p{L} ]+$/u;
-            let phonePattern = /^[0-9]{10}$/;
-            if (!namePattern.test(name) || name.length < 3) {
-                alert("Въведете валидно име (само букви, поне 3 символа)!");
-                return false;
-            }
-            if (!email.match(/^[^@]+@[^@]+\.[a-z]{2,}$/i)) {
-                alert("Невалиден имейл!");
-                return false;
-            }
-            if (!phonePattern.test(phone)) {
-                alert("Телефонът трябва да съдържа точно 10 цифри!");
-                return false;
-            }
-            if (pass1.length < 6) {
-                alert("Паролата трябва да е поне 6 символа!");
-                return false;
-            }
-            if (pass1 !== pass2) {
-                alert("Паролите не съвпадат!");
-                return false;
-            }
-            return true;
-        }
-    </script>
-</head>
-<body>
-    <h2>Регистрация</h2>
-    <?php if($message) echo "<p><b>$message</b></p>"; ?>
-    <form name="regForm" method="POST" action="" onsubmit="return validateForm()">
-        <label>Име:</label><br>
-        <input type="text" name="name" required><br><br>
-        <label>Имейл:</label><br>
-        <input type="email" name="email" required><br><br>
-        <label>Телефон (10 цифри):</label><br>
-        <input type="text" name="phone" required maxlength="10"><br><br>
-        <label>Парола:</label><br>
-        <input type="password" name="password" required><br><br>
-        <label>Потвърди паролата:</label><br>
-        <input type="password" name="confirm_password" required><br><br>
-        <button type="submit">Регистрация</button>
-    </form>
-    <br>
-    <a href="login.php">Имаш акаунт? Влез тук</a>
-</body>
-</html>
+<form method="post">
+  <label>Име: <input type="text" name="name" required></label><br><br>
+  <label>Имейл: <input type="email" name="email" required></label><br><br>
+  <label>Телефон: <input type="text" name="phone" required></label><br><br>
+  <label>Парола: <input type="password" name="password" required></label><br><br>
+  <label>Повтори парола: <input type="password" name="password2" required></label><br><br>
+  <input type="hidden" name="next" value="<?= htmlspecialchars($_GET['next'] ?? 'index.php') ?>">
+  <button type="submit">Регистрация</button>
+</form>
+
+<p>Вече имаш акаунт? <a href="login.php?next=<?=urlencode($_GET['next'] ?? 'index.php')?>">Вход</a></p>
+<?php require_once __DIR__.'/footer.php'; ?>

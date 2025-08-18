@@ -1,44 +1,71 @@
 <?php
-$servername = "localhost";
-$username = "root";
-$password = "";
-$dbname = "spa_center";
+// services.php
+session_start();
 
-// Връзка с базата
-$conn = new mysqli($servername, $username, $password, $dbname);
-if ($conn->connect_error) {
-    die("Грешка при връзка: " . $conn->connect_error);
+// 1) Връзка с базата
+$mysqli = new mysqli("localhost","root","","spa_center");
+if ($mysqli->connect_error) {
+    die("Грешка при връзка: " . $mysqli->connect_error);
 }
+$mysqli->set_charset("utf8");
 
-// Извличане на всички услуги
-$sql = "SELECT id, name, description, duration, price, category FROM services";
-$result = $conn->query($sql);
+// 2) Флаг за логнат потребител
+$isLogged = !empty($_SESSION['user_id']);
 
-// HTML изход
-echo "<h2>Списък с услуги</h2>";
-if ($result->num_rows > 0) {
-    echo "<table border='1' cellpadding='5'>";
-    echo "<tr>
-            <th>ID</th>
-            <th>Име</th>
-            <th>Описание</th>
-            <th>Времетраене (мин)</th>
-            <th>Цена</th>
-            <th>Категория</th>
-          </tr>";
-    while($row = $result->fetch_assoc()) {
-        echo "<tr>
-                <td>".$row['id']."</td>
-                <td>".$row['name']."</td>
-                <td>".$row['description']."</td>
-                <td>".$row['duration']."</td>
-                <td>".$row['price']."</td>
-                <td>".$row['category']."</td>
-              </tr>";
-    }
-    echo "</table>";
-} else {
-    echo "Няма намерени услуги.";
-}
-$conn->close();
+// 3) Извличане на услуги + категория
+$sql = "
+SELECT s.id,
+       s.name,
+       s.description,
+       s.duration,
+       s.price,
+       COALESCE(c.name, '—') AS category
+FROM services s
+LEFT JOIN service_categories c ON c.id = s.category_id
+ORDER BY c.name, s.name
+";
+$result = $mysqli->query($sql);
+
+// 4) Хедър с навигация
+require_once __DIR__ . '/header.php';
 ?>
+<h2>Списък с услуги</h2>
+
+<table>
+  <tr>
+    <th>ID</th>
+    <th>Име</th>
+    <th>Описание</th>
+    <th>Времетраене (мин)</th>
+    <th>Цена</th>
+    <th>Категория</th>
+    <th>Действия</th>
+  </tr>
+
+  <?php if ($result && $result->num_rows > 0): ?>
+    <?php while ($row = $result->fetch_assoc()): ?>
+      <?php
+        // Умна препратка за бутона "Резервирай"
+        $target = 'add_reservation.php?service_id='.(int)$row['id'];
+        $bookUrl = $isLogged
+          ? $target
+          : ('login.php?next='.urlencode($target));
+      ?>
+      <tr>
+        <td><?= (int)$row['id'] ?></td>
+        <td><?= htmlspecialchars($row['name']) ?></td>
+        <td><?= htmlspecialchars($row['description'] ?? '') ?></td>
+        <td><?= (int)$row['duration'] ?></td>
+        <td><?= number_format((float)$row['price'], 2) ?> лв.</td>
+        <td><?= htmlspecialchars($row['category']) ?></td>
+        <td><a href="<?= $bookUrl ?>">Резервирай</a></td>
+      </tr>
+    <?php endwhile; ?>
+  <?php else: ?>
+    <tr><td colspan="7">Няма намерени услуги.</td></tr>
+  <?php endif; ?>
+</table>
+
+<?php
+require_once __DIR__ . '/footer.php';
+$mysqli->close();

@@ -1,6 +1,7 @@
 <?php
 // reservation_edit.php
 session_start();
+include 'header.php'; 
 $role = $_SESSION['role'] ?? 'client';
 if ($role === 'client') { header("Location: reservations.php"); exit; }
 

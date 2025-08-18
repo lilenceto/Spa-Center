@@ -1,7 +1,7 @@
 <?php
 // reservations.php
 session_start();
-
+include 'header.php'; 
 $role = $_SESSION['role']    ?? 'client';        // 'admin' | 'employee' | 'client'
 $uid  = (int)($_SESSION['user_id'] ?? 0);
 

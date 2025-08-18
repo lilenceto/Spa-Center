@@ -9,7 +9,7 @@ if (!isset($_SESSION["user_id"])) {
 // Можеш да добавиш повече потребителски данни, ако са нужни
 $user_name = $_SESSION["user_name"];
 ?>
-
+<?php include 'header.php'; ?>
 <!DOCTYPE html>
 <html lang="bg">
 <head>

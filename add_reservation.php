@@ -1,12 +1,22 @@
 <?php
 // add_reservation.php
+
 session_start();
+if (empty($_SESSION['user_id'])) {
+    // пазим къде иска да отиде човекът (вкл. избрана услуга)
+    $next = 'add_reservation.php';
+    if (!empty($_GET['service_id'])) {
+        $next .= '?service_id='.(int)$_GET['service_id'];
+    }
+    header('Location: login.php?next='.urlencode($next));
+    exit;
+}
 $servername = "localhost";
 $username = "root";
 $password = "";
 $dbname = "spa_center";
 $message = "";
-
+include 'header.php'; 
 // Пример: ако имаш login, вземи реалния user_id от сесията
 $user_id = isset($_SESSION['user_id']) ? (int)$_SESSION['user_id'] : 1;
 
@@ -26,7 +36,7 @@ function fetchAll($conn, $sql, $types = "", $params = []) {
         $res = $conn->query($sql);
         if (!$res) return [];
         $rows = [];
-        while ($row = $res->fetch_assoc()) $rows[] = $row;
+        while ($row = $res->fetch_assoc()) $rows[] = $row;  
         return $rows;
     }
 }
