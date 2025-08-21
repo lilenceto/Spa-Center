@@ -1,111 +1,111 @@
 <?php
-session_start();
 require_once "db.php";
 
-if (empty($_SESSION['user_id'])) {
-    $next = 'add_reservation.php';
-    if (!empty($_GET['service_id'])) {
-        $next .= '?service_id='.(int)$_GET['service_id'];
-    }
-    header('Location: login.php?next='.urlencode($next));
-    exit;
-}
-
-$user_id = (int)$_SESSION['user_id'];
-
-// взимаме услугата ако е избрана
-$service_id = isset($_GET['service_id']) ? (int)$_GET['service_id'] : 0;
-
-$service = null;
-if ($service_id > 0) {
-    $stmt = $mysqli->prepare("SELECT id, name, duration FROM services WHERE id=?");
-    $stmt->bind_param("i", $service_id);
-    $stmt->execute();
-    $service = $stmt->get_result()->fetch_assoc();
-    $stmt->close();
-}
-
-include "header.php";
+// Взимаме всички услуги + категории
+$services = $mysqli->query("
+    SELECT s.id, s.name, c.name AS category_name, c.id AS category_id
+    FROM services s
+    JOIN service_categories c ON c.id = s.category_id
+    ORDER BY c.name, s.name
+")->fetch_all(MYSQLI_ASSOC);
 ?>
+
 <!DOCTYPE html>
 <html lang="bg">
 <head>
-<meta charset="UTF-8">
-<title>Нова резервация</title>
-<style>
-body { font-family: 'Segoe UI', sans-serif; background: #f5f6fa; margin:0; padding:0;}
-.container { max-width:600px; margin:30px auto; background:#fff; padding:25px; border-radius:12px; box-shadow:0 4px 12px rgba(0,0,0,.1);}
-h2 { text-align:center; margin-bottom:20px; }
-label { font-weight:bold; display:block; margin-top:15px; }
-select, input[type=date], input[type=time], button {
-    width:100%; padding:10px; margin-top:5px; border-radius:8px; border:1px solid #ccc;
-}
-button { background:#28a745; color:#fff; font-weight:bold; border:none; cursor:pointer; margin-top:20px; }
-button:hover { background:#218838; }
-</style>
-<script>
-function onDateChange() {
-    const date = document.getElementById("reservation_date").value;
-    const serviceId = <?= $service_id ?>;
-    if(date && serviceId){
-        window.location.href = "add_reservation.php?service_id=" + serviceId + "&date=" + date;
-    }
-}
-</script>
+    <meta charset="UTF-8">
+    <title>Нова резервация</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body>
-<div class="container">
-  <h2>Резервирай услуга</h2>
-  <?php if ($service): ?>
-    <form method="POST" action="save_reservation.php">
-        <input type="hidden" name="service_id" value="<?= $service['id'] ?>">
+<body class="bg-light">
 
-        <label>Услуга:</label>
-        <p><b><?= htmlspecialchars($service['name']) ?></b> (<?= $service['duration'] ?> мин.)</p>
+<div class="container py-5">
+    <div class="card shadow">
+        <div class="card-header bg-primary text-white">
+            <h4 class="mb-0">Нова резервация</h4>
+        </div>
+        <div class="card-body">
 
-        <label>Дата:</label>
-        <input type="date" name="reservation_date" id="reservation_date" required 
-               value="<?= isset($_GET['date']) ? htmlspecialchars($_GET['date']) : '' ?>" onchange="onDateChange()">
+            <form method="POST" action="save_reservation.php">
+                <!-- Услуга -->
+                <div class="mb-3">
+                    <label for="serviceSelect" class="form-label">Услуга:</label>
+                    <select name="service_id" id="serviceSelect" class="form-select" required>
+                        <option value="">-- Изберете услуга --</option>
+                        <?php foreach ($services as $s): ?>
+                            <option value="<?= $s['id'] ?>" data-category="<?= $s['category_id'] ?>">
+                                <?= htmlspecialchars($s['category_name'] . " - " . $s['name']) ?>
+                            </option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
 
-        <?php if (!empty($_GET['date'])): ?>
-            <label>Свободни часове:</label>
-            <select name="selected_time" required>
-                <?php
-                $date = $_GET['date'];
-                $duration = (int)$service['duration'];
+                <!-- Служител -->
+                <div class="mb-3" id="employeeSelectDiv" style="display:none;">
+                    <label for="employeeSelect" class="form-label">Служител:</label>
+                    <select name="employee_id" id="employeeSelect" class="form-select">
+                        <!-- ще се зарежда с JS -->
+                    </select>
+                </div>
 
-                // генерираме часовете от 09:00 до 18:00
-                $start = strtotime("$date 09:00:00");
-                $end   = strtotime("$date 18:00:00");
+                <!-- Дата -->
+                <div class="mb-3">
+                    <label for="date" class="form-label">Дата:</label>
+                    <input type="date" name="reservation_date" id="date" class="form-control" required>
+                </div>
 
-                while ($start < $end) {
-                    $slot_start = date("Y-m-d H:i:s", $start);
-                    $slot_end   = date("Y-m-d H:i:s", strtotime("+$duration minutes", $start));
+                <!-- Час -->
+                <div class="mb-3">
+                    <label for="time" class="form-label">Час:</label>
+                    <input type="time" name="reservation_time" id="time" class="form-control" required>
+                </div>
 
-                    // проверка дали този час е вече зает
-                    $stmt = $mysqli->prepare("SELECT id FROM reservations WHERE service_id=? AND start_datetime=? LIMIT 1");
-                    $stmt->bind_param("is", $service['id'], $slot_start);
-                    $stmt->execute();
-                    $taken = $stmt->get_result()->num_rows > 0;
-                    $stmt->close();
+                <!-- Бутон -->
+                <button type="submit" class="btn btn-success w-100">Запази</button>
+            </form>
 
-                    if (!$taken) {
-                        $display = date("H:i", $start) . " - " . date("H:i", strtotime("+$duration minutes", $start));
-                        echo "<option value='".date("H:i", $start)."'>$display</option>";
-                    }
-
-                    $start = strtotime("+30 minutes", $start); // стъпка през 30 мин.
-                }
-                ?>
-            </select>
-        <?php endif; ?>
-
-        <button type="submit">Резервирай</button>
-    </form>
-  <?php else: ?>
-    <p>Не е избрана валидна услуга.</p>
-  <?php endif; ?>
+        </div>
+    </div>
 </div>
+
+<script>
+document.getElementById("serviceSelect").addEventListener("change", function() {
+    const selected = this.options[this.selectedIndex];
+    const categoryId = selected.getAttribute("data-category");
+
+    const employeeDiv = document.getElementById("employeeSelectDiv");
+    const employeeSelect = document.getElementById("employeeSelect");
+
+    if (!categoryId) {
+        employeeDiv.style.display = "none";
+        return;
+    }
+
+    // Ако е СПА – няма избор на служител
+    if (categoryId == 4) {
+        employeeDiv.style.display = "none";
+        employeeSelect.innerHTML = "";
+    } else {
+        // AJAX заявка за служители по услуга
+        fetch("get_employees.php?service_id=" + selected.value)
+            .then(r => r.json())
+            .then(data => {
+                employeeSelect.innerHTML = "";
+                if (data.length > 0) {
+                    data.forEach(emp => {
+                        const opt = document.createElement("option");
+                        opt.value = emp.id;
+                        opt.textContent = emp.name;
+                        employeeSelect.appendChild(opt);
+                    });
+                    employeeDiv.style.display = "block"; 
+                } else {
+                    employeeDiv.style.display = "none";
+                }
+            });
+    }
+});
+</script>
+
 </body>
 </html>
-<?php include "footer.php"; ?>
