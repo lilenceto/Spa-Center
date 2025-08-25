@@ -220,19 +220,19 @@ function getTimeUntilReservation($date, $time) {
                                             <a href="reservation_edit.php?id=<?= (int)$row['id'] ?>" class="action-btn edit-btn" title="Edit">
                                                 <i class="fas fa-edit"></i>
                                             </a>
-                                            <?php if ($row['status'] === 'Awaiting'): ?>
-                                                <a href="reservation_status.php?id=<?= (int)$row['id'] ?>&action=approve" class="action-btn approve-btn" title="Approve">
-                                                    <i class="fas fa-check"></i>
-                                                </a>
-                                                <a href="reservation_status.php?id=<?= (int)$row['id'] ?>&action=cancel" class="action-btn cancel-btn" title="Cancel">
-                                                    <i class="fas fa-times"></i>
-                                                </a>
-                                            <?php endif; ?>
+                                                                                         <?php if ($row['status'] === 'Awaiting'): ?>
+                                                 <a href="reservation_status.php?id=<?= (int)$row['id'] ?>&action=approve" class="action-btn approve-btn" title="Approve">
+                                                     <i class="fas fa-check"></i>
+                                                 </a>
+                                                 <a href="#" onclick="confirmCancel(<?= (int)$row['id'] ?>)" class="action-btn cancel-btn" title="Cancel">
+                                                     <i class="fas fa-times"></i>
+                                                 </a>
+                                             <?php endif; ?>
                                         </div>
-                                    <?php elseif ($canClientCancel): ?>
-                                        <a href="reservation_status.php?id=<?= (int)$row['id'] ?>&action=cancel" class="action-btn cancel-btn" title="Cancel">
-                                            <i class="fas fa-times"></i>
-                                        </a>
+                                                                         <?php elseif ($canClientCancel): ?>
+                                         <a href="#" onclick="confirmCancel(<?= (int)$row['id'] ?>)" class="action-btn cancel-btn" title="Cancel">
+                                             <i class="fas fa-times"></i>
+                                         </a>
                                     <?php else: ?>
                                         <span class="no-actions">—</span>
                                     <?php endif; ?>
@@ -385,7 +385,7 @@ function getTimeUntilReservation($date, $time) {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     overflow: hidden;
-    table-layout: auto;
+    table-layout: fixed;
 }
 
 .reservations-table th {
@@ -393,7 +393,7 @@ function getTimeUntilReservation($date, $time) {
     color: #0f4c3a;
     font-weight: 600;
     padding: 1rem 0.75rem;
-    text-align: left;
+    text-align: center;
     font-size: 0.9rem;
     white-space: nowrap;
 }
@@ -431,7 +431,7 @@ function getTimeUntilReservation($date, $time) {
 
 .reservations-table th:nth-child(6), /* Price */
 .reservations-table td:nth-child(6) {
-    width: 6%;
+    width: 12%;
     min-width: 60px;
 }
 
@@ -449,7 +449,7 @@ function getTimeUntilReservation($date, $time) {
 
 .reservations-table th:nth-child(9), /* Time */
 .reservations-table td:nth-child(9) {
-    width: 5%;
+    width: 8%;
     min-width: 50px;
 }
 
@@ -459,48 +459,38 @@ function getTimeUntilReservation($date, $time) {
     min-width: 80px;
 }
 
-.reservations-table th:nth-child(11), /* End */
+.reservations-table th:nth-child(11), /* status */
 .reservations-table td:nth-child(11) {
-    width: 8%;
+    width: 13%;
     min-width: 80px;
 }
 
-.reservations-table th:nth-child(12), /* Status */
+.reservations-table th:nth-child(12), /* Time Until */
 .reservations-table td:nth-child(12) {
-    width: 12%;
+    width: 9%;
     min-width: 130px;
 }
 
-.reservations-table th:nth-child(13), /* Time Until */
+.reservations-table th:nth-child(13), /*  Actions */
 .reservations-table td:nth-child(13) {
-    width: 6%;
+    width: 9%;
     min-width: 70px;
 }
 
-.reservations-table th:nth-child(14), /* Actions */
-.reservations-table td:nth-child(14) {
-    width: 8%;
-    min-width: 80px;
-}
+
 
 .reservations-table td {
     padding: 1rem 0.75rem;
     border-top: 1px solid rgba(212, 175, 55, 0.1);
     color: #f8f9fa;
     font-size: 0.9rem;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
-    word-wrap: break-word;
-    max-width: 0;
-}
-
-/* Allow specialist names to display fully */
-.reservations-table td:nth-child(7) {
-    white-space: normal;
     overflow: visible;
     text-overflow: clip;
+    white-space: normal;
+    word-wrap: break-word;
     line-height: 1.3;
+    vertical-align: middle;
+    text-align: center;
 }
 
 /* Style for "No specialist needed" text */
@@ -508,40 +498,11 @@ function getTimeUntilReservation($date, $time) {
     color: #6c757d;
     font-style: italic;
     font-size: 0.8rem;
+}
+
+/* Keep status badges on one line */
+.status-badge {
     white-space: nowrap;
-}
-
-/* Allow status badges to display fully */
-.reservations-table td:nth-child(12) {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-}
-
-/* Allow service names to display fully */
-.reservations-table td:nth-child(3) {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-    line-height: 1.3;
-}
-
-/* Allow category names to display fully */
-.reservations-table td:nth-child(4) {
-    white-space: normal;
-    overflow: visible;
-    text-overflow: clip;
-    line-height: 1.3;
-}
-
-/* Make date and time columns compact */
-.reservations-table td:nth-child(8), /* Date */
-.reservations-table td:nth-child(9), /* Time */
-.reservations-table td:nth-child(13) { /* Time Until */
-    white-space: nowrap;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    font-size: 0.85rem;
 }
 
 .reservation-row:hover {
@@ -552,6 +513,13 @@ function getTimeUntilReservation($date, $time) {
     opacity: 0.7;
     background: rgba(128, 128, 128, 0.1);
 }
+
+/* Ensure consistent row heights with wrapped text */
+.reservations-table tbody tr {
+    min-height: 60px;
+}
+
+
 
 .status-badge {
     display: inline-block;
@@ -731,7 +699,156 @@ function getTimeUntilReservation($date, $time) {
         font-size: 2rem;
     }
 }
+
+/* Confirmation Dialog Styles */
+.confirmation-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    display: none;
+    justify-content: center;
+    align-items: center;
+    z-index: 1000;
+}
+
+.confirmation-dialog {
+    background: linear-gradient(135deg, #0f4c3a, #1a5f4a);
+    border: 2px solid #d4af37;
+    border-radius: 20px;
+    padding: 2rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+}
+
+.confirmation-dialog h3 {
+    color: #d4af37;
+    margin-bottom: 1rem;
+    font-size: 1.5rem;
+}
+
+.confirmation-dialog p {
+    color: #f8f9fa;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+}
+
+.confirmation-buttons {
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+}
+
+.confirm-btn, .cancel-dialog-btn {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 25px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.confirm-btn {
+    background: linear-gradient(135deg, #dc3545, #c82333);
+    color: white;
+}
+
+.confirm-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(220, 53, 69, 0.4);
+}
+
+.cancel-dialog-btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: #f8f9fa;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+}
+
+.cancel-dialog-btn:hover {
+    background: rgba(212, 175, 55, 0.2);
+    border-color: #d4af37;
+}
 </style>
+
+<!-- Confirmation Dialog -->
+<div id="confirmationOverlay" class="confirmation-overlay">
+    <div class="confirmation-dialog">
+        <h3><i class="fas fa-exclamation-triangle"></i> Confirm Cancellation</h3>
+        <p>Are you sure you want to cancel this reservation? This action cannot be undone.</p>
+        <div class="confirmation-buttons">
+            <button id="confirmCancelBtn" class="confirm-btn">
+                <i class="fas fa-times"></i> Yes, Cancel Reservation
+            </button>
+            <button onclick="hideConfirmation()" class="cancel-dialog-btn">
+                <i class="fas fa-arrow-left"></i> No, Keep Reservation
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+let currentReservationId = null;
+
+function confirmCancel(reservationId) {
+    currentReservationId = reservationId;
+    document.getElementById('confirmationOverlay').style.display = 'flex';
+}
+
+function hideConfirmation() {
+    document.getElementById('confirmationOverlay').style.display = 'none';
+    currentReservationId = null;
+}
+
+document.getElementById('confirmCancelBtn').addEventListener('click', function() {
+    if (currentReservationId) {
+        // Show loading state
+        this.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Cancelling...';
+        this.disabled = true;
+        
+        // Make AJAX request to cancel the reservation
+        fetch('reservation_status.php', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded',
+            },
+            body: 'id=' + currentReservationId + '&action=cancel'
+        })
+        .then(response => response.text())
+        .then(data => {
+            // Hide confirmation dialog
+            hideConfirmation();
+            
+            // Show success message and reload page
+            if (data.includes('success') || data.includes('cancelled')) {
+                alert('Reservation cancelled successfully!');
+                location.reload();
+            } else {
+                alert('Error cancelling reservation. Please try again.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            alert('Error cancelling reservation. Please try again.');
+            hideConfirmation();
+        });
+    }
+});
+
+// Close dialog when clicking outside
+document.getElementById('confirmationOverlay').addEventListener('click', function(e) {
+    if (e.target === this) {
+        hideConfirmation();
+    }
+});
+</script>
 
 <?php
 if (isset($stmt) && $stmt) {
