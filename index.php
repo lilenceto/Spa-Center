@@ -380,12 +380,13 @@ $res = $mysqli->query("SELECT id, name FROM service_categories ORDER BY id");
       <ul class="nav-links">
         <li><a href="#home">Home</a></li>
         <li><a href="#services">Services</a></li>
-        <li><a href="#about">About</a></li>
-        <li><a href="#contact">Contact</a></li>
+        <li><a href="price_list.php">Price List</a></li>
         <?php if(isset($_SESSION['user_id'])): ?>
-          <li><a href="dashboard.php">Dashboard</a></li>
+          <li><a href="reservations.php">My Reservations</a></li>
+          <li><a href="logout.php">Logout</a></li>
         <?php else: ?>
           <li><a href="login.php">Login</a></li>
+          <li><a href="register.php">Register</a></li>
         <?php endif; ?>
       </ul>
     </div>
@@ -397,9 +398,9 @@ $res = $mysqli->query("SELECT id, name FROM service_categories ORDER BY id");
     <div class="floating-element"></div>
     <div class="floating-element"></div>
     
-          <div class="hero-content">
-        <h1>Welcome to Lotus Temple</h1>
-        <p>Experience ultimate relaxation and rejuvenation in our serene wellness sanctuary</p>
+    <div class="hero-content">
+      <h1>Welcome to Lotus Temple - Spa & Wellness</h1>
+      <p>Experience ultimate relaxation and rejuvenation in our serene wellness sanctuary</p>
       <a href="#services" class="cta-button">
         <i class="fas fa-arrow-down"></i> Explore Services
       </a>
@@ -419,11 +420,13 @@ $res = $mysqli->query("SELECT id, name FROM service_categories ORDER BY id");
       </div>
       
       <div class="categories">
+        <?php $categoryNames = [1 => 'Massage', 2 => 'Fitness']; ?>
         <?php while($row = $res->fetch_assoc()): ?>
+          <?php $displayName = $categoryNames[$row['id']] ?? $row['name']; ?>
           <a class="category-card" href="category.php?id=<?= $row['id'] ?>">
-            <img src="images/category_<?= $row['id'] ?>.jpg" alt="<?= htmlspecialchars($row['name']) ?>">
+            <img src="images/category_<?= $row['id'] ?>.jpg" alt="<?= htmlspecialchars($displayName) ?>">
             <div class="category-content">
-              <h3><?= htmlspecialchars($row['name']) ?></h3>
+              <h3><?= htmlspecialchars($displayName) ?></h3>
               <p>Experience the ultimate in luxury and wellness</p>
             </div>
           </a>

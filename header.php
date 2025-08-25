@@ -81,6 +81,8 @@ $userName = $_SESSION['user_name'] ?? '';
       font-weight: 600;
       color: #d4af37;
       backdrop-filter: blur(10px);
+      display: inline-block;
+      vertical-align: middle;
     }
 
     /* Tables */
@@ -214,6 +216,7 @@ $userName = $_SESSION['user_name'] ?? '';
       .welcome-message {
         margin: 1rem 0;
         text-align: center;
+        display: block;
       }
     }
   </style>
@@ -222,29 +225,33 @@ $userName = $_SESSION['user_name'] ?? '';
 
   <!-- Navigation -->
   <nav>
-          <a href="index.php">
-        <i class="fas fa-spa"></i> Lotus Temple
-      </a>
-    <a href="services.php">
-      <i class="fas fa-concierge-bell"></i> Услуги
-    </a>
-    <a href="reservations.php">
-      <i class="fas fa-calendar-alt"></i> Резервации
+    <a href="index.php">
+      <i class="fas fa-spa"></i> Lotus Temple
     </a>
     
     <?php if ($isLogged): ?>
       <span class="welcome-message">
-        <i class="fas fa-user-circle"></i> Добре дошъл, <?= htmlspecialchars($userName) ?>
+        <i class="fas fa-user-circle"></i> Welcome, <?= htmlspecialchars($userName) ?>
       </span>
+    <?php endif; ?>
+    
+    <a href="price_list.php">
+      <i class="fas fa-list-alt"></i> Price List
+    </a>
+    <a href="reservations.php">
+      <i class="fas fa-calendar-alt"></i> Reservations
+    </a>
+    
+    <?php if ($isLogged): ?>
       <a href="logout.php">
-        <i class="fas fa-sign-out-alt"></i> Изход
+        <i class="fas fa-sign-out-alt"></i> Log out
       </a>
     <?php else: ?>
       <a href="login.php">
-        <i class="fas fa-sign-in-alt"></i> Вход
+        <i class="fas fa-sign-in-alt"></i> Login
       </a>
       <a href="register.php">
-        <i class="fas fa-user-plus"></i> Регистрация
+        <i class="fas fa-user-plus"></i> Register
       </a>
     <?php endif; ?>
   </nav>
