@@ -25,7 +25,7 @@ include "header.php";
 // Define category-specific styling and content
 $categoryConfig = [
     1 => [
-        'name' => 'Масаж & Тяло',
+        'name' => 'Massage & Body',
         'icon' => 'fas fa-hands',
         'color' => '#d4af37',
         'gradient' => 'linear-gradient(135deg, #d4af37, #b8941f)',
@@ -33,7 +33,7 @@ $categoryConfig = [
         'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'massage\' x=\'0\' y=\'0\' width=\'50\' height=\'50\' patternUnits=\'userSpaceOnUse\'><circle cx=\'25\' cy=\'25\' r=\'2\' fill=\'%23d4af37\' opacity=\'0.3\'/><path d=\'M10 20 Q25 10 40 20\' stroke=\'%23d4af37\' stroke-width=\'1\' fill=\'none\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23massage)\'/></svg>")'
     ],
     2 => [
-        'name' => 'Фитнес',
+        'name' => 'Fitness',
         'icon' => 'fas fa-dumbbell',
         'color' => '#4caf50',
         'gradient' => 'linear-gradient(135deg, #4caf50, #2e7d32)',
@@ -41,20 +41,20 @@ $categoryConfig = [
         'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'fitness\' x=\'0\' y=\'0\' width=\'30\' height=\'30\' patternUnits=\'userSpaceOnUse\'><rect x=\'10\' y=\'10\' width=\'10\' height=\'10\' fill=\'%234caf50\' opacity=\'0.3\'/><circle cx=\'25\' cy=\'25\' r=\'2\' fill=\'%234caf50\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23fitness)\'/></svg>")'
     ],
     3 => [
-        'name' => 'Лице & Красота',
+        'name' => 'Facial & Beauty',
         'icon' => 'fas fa-spa',
-        'color' => '#e91e63',
-        'gradient' => 'linear-gradient(135deg, #e91e63, #c2185b)',
+        'color' => '#9c27b0',
+        'gradient' => 'linear-gradient(135deg, #9c27b0, #7b1fa2)',
         'description' => 'Reveal your natural beauty with our advanced facial and beauty treatments',
-        'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'beauty\' x=\'0\' y=\'0\' width=\'40\' height=\'40\' patternUnits=\'userSpaceOnUse\'><circle cx=\'20\' cy=\'20\' r=\'1.5\' fill=\'%23e91e63\' opacity=\'0.3\'/><path d=\'M15 15 Q20 10 25 15\' stroke=\'%23e91e63\' stroke-width=\'0.8\' fill=\'none\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23beauty)\'/></svg>")'
+        'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'beauty\' x=\'0\' y=\'0\' width=\'40\' height=\'40\' patternUnits=\'userSpaceOnUse\'><circle cx=\'20\' cy=\'20\' r=\'1.5\' fill=\'%239c27b0\' opacity=\'0.3\'/><path d=\'M15 15 Q20 10 25 15\' stroke=\'%239c27b0\' stroke-width=\'0.8\' fill=\'none\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23beauty)\'/></svg>")'
     ],
     4 => [
-        'name' => 'Аква & Басейн',
+        'name' => 'Aqua & Pool',
         'icon' => 'fas fa-swimming-pool',
-        'color' => '#2196f3',
-        'gradient' => 'linear-gradient(135deg, #2196f3, #1976d2)',
+        'color' => '#00bcd4',
+        'gradient' => 'linear-gradient(135deg, #00bcd4, #0097a7)',
         'description' => 'Dive into relaxation with our aqua therapy and pool services',
-        'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'aqua\' x=\'0\' y=\'0\' width=\'60\' height=\'60\' patternUnits=\'userSpaceOnUse\'><path d=\'M10 30 Q30 20 50 30 Q70 40 90 30\' stroke=\'%232196f3\' stroke-width=\'1\' fill=\none\' opacity=\'0.3\'/><circle cx=\'30\' cy=\'50\' r=\'1.5\' fill=\'%232196f3\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23aqua)\'/></svg>")'
+        'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'aqua\' x=\'0\' y=\'0\' width=\'60\' height=\'60\' patternUnits=\'userSpaceOnUse\'<path d=\'M10 30 Q30 20 50 30 Q70 40 90 30\' stroke=\'%2300bcd4\' stroke-width=\'1\' fill=\none\' opacity=\'0.3\'/><circle cx=\'30\' cy=\'50\' r=\'1.5\' fill=\'%2300bcd4\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23aqua)\'/></svg>")'
     ]
 ];
 
@@ -138,6 +138,9 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
       z-index: -1;
     }
 
+
+
+  
     .hero-content h1 {
       font-family: 'Playfair Display', serif;
       font-size: 4.5rem;
@@ -577,9 +580,9 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
                   <span class="duration">
                     <i class="fas fa-clock"></i> <?= (int)$srv['duration'] ?> min
                   </span>
-                  <span class="price">
-                    <i class="fas fa-coins"></i> <?= number_format($srv['price'], 2) ?> лв.
-                  </span>
+                                     <span class="price">
+                     <i class="fas fa-coins"></i> €<?= number_format($srv['price'], 2) ?>
+                   </span>
                 </div>
                 <a href="add_reservation.php?service_id=<?= $srv['id'] ?>" class="book-button">
                   <i class="fas fa-calendar-plus"></i> Book Now
