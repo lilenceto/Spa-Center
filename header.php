@@ -243,6 +243,15 @@ $userName = $_SESSION['user_name'] ?? '';
     </a>
     
     <?php if ($isLogged): ?>
+      <a href="admin_panel.php" id="admin-panel-link" style="display: none;">
+        <i class="fas fa-cogs"></i> Admin Panel
+      </a>
+      <a href="admin_dashboard.php" id="admin-dashboard-link" style="display: none;">
+        <i class="fas fa-tachometer-alt"></i> Dashboard
+      </a>
+    <?php endif; ?>
+    
+    <?php if ($isLogged): ?>
       <a href="logout.php">
         <i class="fas fa-sign-out-alt"></i> Log out
       </a>
@@ -254,4 +263,19 @@ $userName = $_SESSION['user_name'] ?? '';
         <i class="fas fa-user-plus"></i> Register
       </a>
     <?php endif; ?>
-  </nav>
+      </nav>
+
+    <script>
+    // Check if user has admin role and show admin panel link
+    <?php if ($isLogged): ?>
+    fetch('check_admin_role.php')
+        .then(response => response.json())
+        .then(data => {
+            if (data.is_admin) {
+                document.getElementById('admin-panel-link').style.display = 'inline-block';
+                document.getElementById('admin-dashboard-link').style.display = 'inline-block';
+            }
+        })
+        .catch(error => console.error('Error checking admin role:', error));
+    <?php endif; ?>
+    </script>

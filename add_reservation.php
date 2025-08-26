@@ -384,9 +384,19 @@ include "header.php";
 }
 
 .form-select option {
-    background: #0f4c3a;
-    color: #f8f9fa;
+    background: #ffffff;
+    color: #000000;
     padding: 0.5rem;
+}
+
+.form-select option:hover {
+    background: #f8f9fa;
+    color: #000000;
+}
+
+.form-select option:checked {
+    background: #d4af37;
+    color: #000000;
 }
 
 .time-selection-container {
