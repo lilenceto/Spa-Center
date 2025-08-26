@@ -128,6 +128,10 @@ function getTimeUntilReservation($date, $time) {
 
 <div class="page-container" style="max-width: 100vw; margin: 0; padding: 0;">
     <div class="reservations-hero">
+        <div class="floating-pool-element"></div>
+        <div class="floating-pool-element"></div>
+        <div class="floating-pool-element"></div>
+        
         <div class="hero-content">
             <h1 class="hero-title">
                 <i class="fas fa-calendar-alt"></i>
@@ -237,14 +241,58 @@ function getTimeUntilReservation($date, $time) {
 
 <style>
 /* Reservations Page Specific Styles */
+
+/* Smooth scrolling for better experience */
+html {
+    scroll-behavior: smooth;
+}
+
+/* Pool Background for the entire page */
+body::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        url('images/pool.jpg'),
+        linear-gradient(135deg, rgba(15, 76, 58, 0.85) 0%, rgba(26, 95, 74, 0.8) 50%, rgba(45, 122, 95, 0.75) 100%);
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    z-index: -1;
+    filter: blur(2px) brightness(0.7) saturate(1.2);
+    transform: scale(1.1);
+}
+
+/* Additional pool overlay for depth */
+body::after {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(45, 122, 95, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(26, 95, 74, 0.1) 0%, transparent 50%);
+    z-index: -1;
+    pointer-events: none;
+}
+
 .reservations-hero {
-    background: linear-gradient(135deg, rgba(15, 76, 58, 0.9) 0%, rgba(26, 95, 74, 0.9) 100%);
-    padding: 3rem 2rem;
+    background: rgba(15, 76, 58, 0.9);
+    padding: 4rem 2rem;
     text-align: center;
     margin-bottom: 2rem;
     border-radius: 20px;
     position: relative;
     overflow: hidden;
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(212, 175, 55, 0.3);
 }
 
 .reservations-hero::before {
@@ -254,37 +302,88 @@ function getTimeUntilReservation($date, $time) {
     left: 0;
     width: 100%;
     height: 100%;
-    background-image: 
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="hero-pattern" x="0" y="0" width="50" height="50" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23d4af37" opacity="0.1"/><path d="M10 20 Q25 10 40 20" stroke="%23d4af37" stroke-width="0.3" fill="none" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23hero-pattern)"/></svg>');
-    background-size: 50px 50px;
-    opacity: 0.3;
+    background: 
+        radial-gradient(circle at center, rgba(212, 175, 55, 0.15) 0%, transparent 60%),
+        radial-gradient(circle at 30% 70%, rgba(45, 122, 95, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(26, 95, 74, 0.1) 0%, transparent 50%);
     z-index: 1;
+}
+
+/* Floating pool elements */
+.reservations-hero::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: 
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="pool-ripples" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23ffffff" opacity="0.2"/><circle cx="175" cy="75" r="1.5" fill="%23d4af37" opacity="0.15"/><circle cx="75" cy="175" r="0.8" fill="%23ffffff" opacity="0.18"/><path d="M10 50 Q30 30 50 50 Q70 70 90 50" stroke="%23d4af37" stroke-width="0.3" fill="none" opacity="0.15"/><path d="M150 20 Q170 40 150 60" stroke="%23ffffff" stroke-width="0.2" fill="none" opacity="0.12"/></pattern></defs><rect width="100" height="100" fill="url(%23pool-ripples)"/></svg>');
+    background-size: 200px 200px;
+    opacity: 0.6;
+    z-index: 1;
+    animation: poolFloat 20s ease-in-out infinite;
+}
+
+@keyframes poolFloat {
+    0%, 100% { transform: translateY(0px) rotate(0deg); }
+    50% { transform: translateY(-10px) rotate(1deg); }
 }
 
 .hero-content {
     position: relative;
-    z-index: 2;
+    z-index: 3;
+    background: rgba(15, 76, 58, 0.1);
+    padding: 3rem;
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
 }
 
 .hero-title {
     font-family: 'Playfair Display', serif;
-    font-size: 2.5rem;
-    font-weight: 600;
-    color: #d4af37;
-    margin-bottom: 1rem;
-    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+    font-size: 3rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 1.5rem;
+    text-shadow: 
+        3px 3px 6px rgba(0,0,0,0.7),
+        0 0 20px rgba(212, 175, 55, 0.3),
+        0 0 40px rgba(212, 175, 55, 0.1);
+    position: relative;
+}
+
+.hero-title::after {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 100px;
+    height: 3px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+    border-radius: 2px;
 }
 
 .hero-subtitle {
-    font-size: 1.1rem;
-    color: #f8f9fa;
-    opacity: 0.9;
+    font-size: 1.3rem;
+    color: #ffffff;
+    font-weight: 400;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
 }
 
 .reservations-container {
     max-width: 95vw;
     margin: 0 auto;
     padding: 0 20px;
+    position: relative;
+    z-index: 2;
 }
 
 .reservations-header {
@@ -292,10 +391,29 @@ function getTimeUntilReservation($date, $time) {
     justify-content: space-between;
     align-items: center;
     margin-bottom: 2rem;
-    padding: 1.5rem;
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    padding: 2rem;
+    background: rgba(15, 76, 58, 0.9);
+    border-radius: 20px;
+    border: 1px solid rgba(212, 175, 55, 0.3);
+    backdrop-filter: blur(15px);
+    box-shadow: 
+        0 15px 35px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.reservations-header::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(45, 122, 95, 0.05) 0%, transparent 50%);
+    border-radius: 20px;
+    pointer-events: none;
 }
 
 .header-actions {
@@ -339,29 +457,67 @@ function getTimeUntilReservation($date, $time) {
     background: rgba(39, 174, 96, 0.2);
     border: 1px solid rgba(39, 174, 96, 0.3);
     color: #2ecc71;
-    padding: 1rem 1.5rem;
-    border-radius: 10px;
+    padding: 1.5rem 2rem;
+    border-radius: 15px;
     display: flex;
     align-items: center;
     gap: 0.5rem;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 25px rgba(39, 174, 96, 0.2);
+    animation: successMessageFadeIn 0.6s ease-out;
+    position: relative;
+    z-index: 2;
+}
+
+@keyframes successMessageFadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
 }
 
 .reservations-table-container {
-    background: rgba(255, 255, 255, 0.05);
-    border-radius: 15px;
-    padding: 1.5rem;
-    border: 1px solid rgba(212, 175, 55, 0.2);
+    background: rgba(15, 76, 58, 0.9);
+    border-radius: 20px;
+    padding: 2rem;
+    border: 1px solid rgba(212, 175, 55, 0.3);
     overflow-x: hidden;
     width: 100%;
+    backdrop-filter: blur(15px);
+    box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    position: relative;
+}
+
+.reservations-table-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(45, 122, 95, 0.03) 0%, transparent 50%);
+    border-radius: 20px;
+    pointer-events: none;
 }
 
 .reservations-table {
     width: 100%;
     border-collapse: collapse;
     background: rgba(255, 255, 255, 0.1);
-    border-radius: 10px;
+    border-radius: 15px;
     overflow: hidden;
     table-layout: fixed;
+    position: relative;
+    z-index: 2;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
 }
 
 .reservations-table th {
@@ -556,24 +712,56 @@ function getTimeUntilReservation($date, $time) {
 
 .empty-state {
     text-align: center;
-    padding: 3rem 1rem;
+    padding: 4rem 2rem;
+    background: rgba(15, 76, 58, 0.1);
+    border-radius: 20px;
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(212, 175, 55, 0.2);
+    position: relative;
+    z-index: 2;
+}
+
+.empty-state::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: 
+        radial-gradient(circle at 30% 70%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(45, 122, 95, 0.05) 0%, transparent 50%);
+    border-radius: 20px;
+    pointer-events: none;
 }
 
 .empty-state i {
-    font-size: 3rem;
-    color: #6c757d;
-    margin-bottom: 1rem;
+    font-size: 4rem;
+    color: #d4af37;
+    margin-bottom: 1.5rem;
+    text-shadow: 0 0 20px rgba(212, 175, 55, 0.3);
+    animation: emptyStateIconFloat 3s ease-in-out infinite;
+}
+
+@keyframes emptyStateIconFloat {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-10px); }
 }
 
 .empty-state h3 {
     color: #d4af37;
-    margin-bottom: 0.5rem;
+    margin-bottom: 1rem;
+    font-size: 1.8rem;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
 }
 
 .empty-state p {
-    color: #f8f9fa;
-    opacity: 0.8;
-    margin-bottom: 1.5rem;
+    color: #ffffff;
+    opacity: 0.9;
+    margin-bottom: 2rem;
+    font-size: 1.1rem;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+    line-height: 1.6;
 }
 
 .cta-button {
@@ -641,6 +829,102 @@ function getTimeUntilReservation($date, $time) {
     }
 }
 
+/* Pool-themed floating elements */
+.floating-pool-element {
+    position: absolute;
+    width: 80px;
+    height: 80px;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+    border-radius: 50%;
+    animation: poolElementFloat 8s ease-in-out infinite;
+    pointer-events: none;
+    z-index: 1;
+}
+
+.floating-pool-element:nth-child(1) {
+    top: 15%;
+    left: 8%;
+    animation-delay: 0s;
+    background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent);
+}
+
+.floating-pool-element:nth-child(2) {
+    top: 65%;
+    right: 12%;
+    animation-delay: 3s;
+    background: radial-gradient(circle, rgba(212, 175, 55, 0.06), transparent);
+}
+
+.floating-pool-element:nth-child(3) {
+    bottom: 25%;
+    left: 15%;
+    animation-delay: 6s;
+    background: radial-gradient(circle, rgba(45, 122, 95, 0.08), transparent);
+}
+
+@keyframes poolElementFloat {
+    0%, 100% { 
+        transform: translateY(0px) rotate(0deg) scale(1); 
+        opacity: 0.6;
+    }
+    25% { 
+        transform: translateY(-15px) rotate(2deg) scale(1.1); 
+        opacity: 0.8;
+    }
+    50% { 
+        transform: translateY(-8px) rotate(-1deg) scale(0.9); 
+        opacity: 0.7;
+    }
+    75% { 
+        transform: translateY(-12px) rotate(1deg) scale(1.05); 
+        opacity: 0.9;
+    }
+}
+
+/* Enhanced button hover effects */
+.new-reservation-btn:hover,
+.back-home-btn:hover {
+    transform: translateY(-3px) scale(1.02);
+    box-shadow: 
+        0 12px 25px rgba(212, 175, 55, 0.4),
+        0 0 0 4px rgba(212, 175, 55, 0.2);
+}
+
+/* Smooth transitions for all elements */
+* {
+    transition: all 0.3s ease;
+}
+
+/* Enhanced table row hover effects */
+.reservation-row:hover {
+    background: rgba(212, 175, 55, 0.08);
+    transform: translateY(-1px);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Pool ripple effect for status badges */
+.status-badge {
+    position: relative;
+    overflow: hidden;
+}
+
+.status-badge::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255, 255, 255, 0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s ease, height 0.6s ease;
+}
+
+.status-badge:hover::before {
+    width: 200%;
+    height: 200%;
+}
 
 </style>
 

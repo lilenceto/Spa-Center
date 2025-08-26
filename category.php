@@ -22,6 +22,43 @@ $result = $stmt->get_result();
 
 include "header.php";
 
+// Function to get appropriate icon for service names
+function getServiceIcon($serviceName) {
+    $serviceName = strtolower($serviceName);
+    
+    // Massage & Body services
+    if (strpos($serviceName, 'massage') !== false) return 'fas fa-hands';
+    if (strpos($serviceName, 'body') !== false) return 'fas fa-user';
+    if (strpos($serviceName, 'therapy') !== false) return 'fas fa-heart';
+    if (strpos($serviceName, 'relax') !== false) return 'fas fa-leaf';
+    
+    // Fitness services
+    if (strpos($serviceName, 'fitness') !== false) return 'fas fa-dumbbell';
+    if (strpos($serviceName, 'training') !== false) return 'fas fa-running';
+    if (strpos($serviceName, 'workout') !== false) return 'fas fa-fire';
+    if (strpos($serviceName, 'hiit') !== false) return 'fas fa-bolt';
+    
+    // Facial & Beauty services
+    if (strpos($serviceName, 'facial') !== false) return 'fas fa-spa';
+    if (strpos($serviceName, 'beauty') !== false) return 'fas fa-star';
+    if (strpos($serviceName, 'skin') !== false) return 'fas fa-gem';
+    if (strpos($serviceName, 'anti') !== false) return 'fas fa-magic';
+    
+    // Aqua & Pool services
+    if (strpos($serviceName, 'pool') !== false) return 'fas fa-swimming-pool';
+    if (strpos($serviceName, 'aqua') !== false) return 'fas fa-water';
+    if (strpos($serviceName, 'hydro') !== false) return 'fas fa-tint';
+    if (strpos($serviceName, 'swim') !== false) return 'fas fa-fish';
+    
+    // Default icons for common words
+    if (strpos($serviceName, 'therapy') !== false) return 'fas fa-heart';
+    if (strpos($serviceName, 'treatment') !== false) return 'fas fa-medical-kit';
+    if (strpos($serviceName, 'session') !== false) return 'fas fa-clock';
+    
+    // Default icon
+    return 'fas fa-spa';
+}
+
 // Define category-specific styling and content
 $categoryConfig = [
     1 => [
@@ -83,7 +120,12 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
       position: relative;
     }
 
-    /* Tropical Background */
+    /* Smooth scrolling for better experience */
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Categories Background for the entire page */
     body::before {
       content: '';
       position: fixed;
@@ -92,11 +134,31 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
       width: 100%;
       height: 100%;
       background-image: 
-        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="tropical" x="0" y="0" width="100" height="100" patternUnits="userSpaceOnUse"><circle cx="20" cy="20" r="2" fill="%23ffffff" opacity="0.1"/><circle cx="80" cy="40" r="1.5" fill="%23ffffff" opacity="0.08"/><circle cx="40" cy="80" r="1" fill="%23ffffff" opacity="0.06"/><path d="M10 30 Q30 10 50 30 Q70 50 90 30" stroke="%23ffffff" stroke-width="0.5" fill="none" opacity="0.1"/></pattern></defs><rect width="100" height="100" fill="url(%23tropical)"/></svg>'),
-        linear-gradient(135deg, #0f4c3a 0%, #1a5f4a 50%, #2d7a5f 100%);
-      background-size: 200px 200px, 100% 100%;
+        url('images/categories.jpg'),
+        linear-gradient(135deg, rgba(15, 76, 58, 0.85) 0%, rgba(26, 95, 74, 0.8) 50%, rgba(45, 122, 95, 0.75) 100%);
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+      background-attachment: fixed;
       z-index: -1;
-      filter: blur(0.5px);
+      filter: blur(2px) brightness(0.7) saturate(1.2);
+      transform: scale(1.1);
+    }
+
+    /* Additional categories overlay for depth */
+    body::after {
+      content: '';
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 80%, rgba(212, 175, 55, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(45, 122, 95, 0.15) 0%, transparent 50%),
+        radial-gradient(circle at 40% 40%, rgba(26, 95, 74, 0.1) 0%, transparent 50%);
+      z-index: -1;
+      pointer-events: none;
     }
 
     /* Category-Specific Background */
@@ -115,16 +177,21 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
 
     /* Hero Section */
     .category-hero {
-      height: 70vh;
+      height: 80vh;
       display: flex;
       align-items: center;
       justify-content: center;
       text-align: center;
       position: relative;
       margin-top: 80px;
-      background: rgba(15, 76, 58, 0.3);
-      backdrop-filter: blur(10px);
+      background: rgba(15, 76, 58, 0.9);
+      backdrop-filter: blur(15px);
       overflow: hidden;
+      border-radius: 20px;
+      border: 1px solid rgba(212, 175, 55, 0.3);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .category-hero::before {
@@ -134,41 +201,97 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
       left: 0;
       width: 100%;
       height: 100%;
-      background: radial-gradient(circle at center, <?= str_replace(['linear-gradient(135deg, ', ', #'], ['rgba(', ', 0.1'], $config['gradient']) ?>, transparent 70%);
+      background: 
+        radial-gradient(circle at center, <?= str_replace(['linear-gradient(135deg, ', ', #'], ['rgba(', ', 0.1'], $config['gradient']) ?>, transparent 60%),
+        radial-gradient(circle at 30% 70%, rgba(45, 122, 95, 0.1) 0%, transparent 50%),
+        radial-gradient(circle at 70% 30%, rgba(26, 95, 74, 0.1) 0%, transparent 50%);
       z-index: -1;
+    }
+
+    /* Floating categories elements */
+    .category-hero::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-image: 
+        url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><pattern id="categories-pattern" x="0" y="0" width="200" height="200" patternUnits="userSpaceOnUse"><circle cx="25" cy="25" r="1" fill="%23d4af37" opacity="0.2"/><circle cx="175" cy="75" r="1.5" fill="%23ffffff" opacity="0.15"/><circle cx="75" cy="175" r="0.8" fill="%23d4af37" opacity="0.18"/><path d="M10 50 Q30 30 50 50 Q70 70 90 50" stroke="%23d4af37" stroke-width="0.3" fill="none" opacity="0.15"/><path d="M150 20 Q170 40 150 60" stroke="%23ffffff" stroke-width="0.2" fill="none" opacity="0.12"/></pattern></defs><rect width="100" height="100" fill="url(%23categories-pattern)"/></svg>');
+      background-size: 200px 200px;
+      opacity: 0.6;
+      z-index: -1;
+      animation: categoriesFloat 20s ease-in-out infinite;
+    }
+
+    @keyframes categoriesFloat {
+      0%, 100% { transform: translateY(0px) rotate(0deg); }
+      50% { transform: translateY(-10px) rotate(1deg); }
     }
 
 
 
   
+    .hero-content {
+      position: relative;
+      z-index: 3;
+      background: rgba(15, 76, 58, 0.1);
+      padding: 3rem;
+      border-radius: 20px;
+      backdrop-filter: blur(10px);
+      border: 1px solid rgba(212, 175, 55, 0.2);
+      box-shadow: 
+        0 20px 40px rgba(0, 0, 0, 0.3),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
+    }
+
     .hero-content h1 {
       font-family: 'Playfair Display', serif;
       font-size: 4.5rem;
       font-weight: 700;
-      margin-bottom: 1rem;
-      color: <?= $config['color'] ?>;
-      text-shadow: 3px 3px 6px rgba(0,0,0,0.5);
+      margin-bottom: 1.5rem;
+      color: #ffffff;
+      text-shadow: 
+        3px 3px 6px rgba(0,0,0,0.7),
+        0 0 20px rgba(212, 175, 55, 0.3),
+        0 0 40px rgba(212, 175, 55, 0.1);
       animation: fadeInUp 1s ease-out;
+      position: relative;
+    }
+
+    .hero-content h1::after {
+      content: '';
+      position: absolute;
+      bottom: -10px;
+      left: 50%;
+      transform: translateX(-50%);
+      width: 120px;
+      height: 3px;
+      background: linear-gradient(90deg, transparent, #d4af37, transparent);
+      border-radius: 2px;
     }
 
     .hero-content p {
       font-size: 1.4rem;
-      margin-bottom: 2rem;
-      color: #f8f9fa;
-      font-weight: 300;
+      margin-bottom: 2.5rem;
+      color: #ffffff;
+      font-weight: 400;
       animation: fadeInUp 1s ease-out 0.3s both;
       max-width: 700px;
       margin-left: auto;
       margin-right: auto;
       line-height: 1.6;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.6);
     }
 
     .category-icon {
       font-size: 5rem;
-      color: <?= $config['color'] ?>;
-      margin-bottom: 1rem;
+      color: #d4af37;
+      margin-bottom: 1.5rem;
       animation: fadeInUp 1s ease-out 0.1s both;
-      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      text-shadow: 
+        2px 2px 4px rgba(0,0,0,0.5),
+        0 0 20px rgba(212, 175, 55, 0.3);
     }
 
     .back-button {
@@ -196,8 +319,25 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
     /* Services Section */
     .services-section {
       padding: 5rem 0;
-      background: rgba(15, 76, 58, 0.8);
-      backdrop-filter: blur(10px);
+      background: rgba(15, 76, 58, 0.9);
+      backdrop-filter: blur(15px);
+      border-top: 1px solid rgba(212, 175, 55, 0.2);
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
+      position: relative;
+    }
+
+    .services-section::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: 
+        radial-gradient(circle at 20% 50%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+        radial-gradient(circle at 80% 50%, rgba(45, 122, 95, 0.05) 0%, transparent 50%);
+      pointer-events: none;
+    }
     }
 
     .container {
@@ -230,19 +370,23 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
 
     .services-grid {
       display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(380px, 1fr));
-      gap: 2.5rem;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 2rem;
+      max-width: 1000px;
+      margin: 0 auto;
     }
 
     .service-card {
-      background: rgba(255, 255, 255, 0.1);
+      background: rgba(15, 76, 58, 0.9);
       backdrop-filter: blur(20px);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 25px;
       overflow: hidden;
       transition: all 0.4s ease;
       position: relative;
-      box-shadow: 0 15px 35px rgba(0,0,0,0.1);
+      box-shadow: 
+        0 15px 35px rgba(0,0,0,0.2),
+        inset 0 1px 0 rgba(255, 255, 255, 0.1);
     }
 
     .service-card::before {
@@ -269,13 +413,14 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
     }
 
     .card-header {
-      height: 200px;
+      height: 120px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: <?= $config['gradient'] ?>;
       position: relative;
       overflow: hidden;
+      border-bottom: 1px solid rgba(212, 175, 55, 0.2);
     }
 
     .card-header::before {
@@ -291,19 +436,26 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
 
     .card-header .icon {
       background: rgba(255,255,255,0.2);
-      padding: 35px;
+      padding: 25px;
       border-radius: 50%;
-      font-size: 3.5rem;
+      font-size: 2.5rem;
       color: #0f4c3a;
-      font-weight: bold;
       backdrop-filter: blur(10px);
       border: 2px solid rgba(255,255,255,0.3);
       z-index: 2;
       position: relative;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .card-header .icon i {
+      font-size: 2.5rem;
+      color: #0f4c3a;
     }
 
     .card-body {
-      padding: 2.5rem;
+      padding: 1.5rem;
       position: relative;
       z-index: 2;
     }
@@ -312,66 +464,147 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
       font-family: 'Playfair Display', serif;
       font-size: 1.6rem;
       font-weight: 600;
-      color: <?= $config['color'] ?>;
+      color: #d4af37;
       margin-bottom: 1rem;
       text-align: center;
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
     }
 
     .card-body p {
-      color: #f8f9fa;
+      color: #ffffff;
       font-size: 1rem;
       margin-bottom: 1.5rem;
       line-height: 1.6;
       text-align: center;
-      opacity: 0.9;
+      opacity: 0.95;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .service-info {
-      background: rgba(255, 255, 255, 0.1);
-      border: 1px solid rgba(255, 255, 255, 0.2);
+      background: rgba(15, 76, 58, 0.8);
+      border: 1px solid rgba(212, 175, 55, 0.3);
       border-radius: 15px;
-      padding: 1.2rem;
-      margin-bottom: 1.5rem;
+      padding: 1rem;
+      margin-bottom: 1rem;
       text-align: center;
       backdrop-filter: blur(10px);
+      box-shadow: 0 5px 15px rgba(0, 0, 0, 0.2);
     }
 
     .service-info .duration,
     .service-info .price {
       display: inline-block;
       margin: 0 1.5rem;
-      color: <?= $config['color'] ?>;
+      color: #d4af37;
       font-weight: 600;
       font-size: 1.1rem;
+      text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
     }
 
     .service-info i {
       margin-right: 0.5rem;
-      color: <?= $config['color'] ?>;
+      color: #d4af37;
     }
 
     .book-button {
       width: 100%;
-      padding: 1.2rem;
-      background: <?= $config['gradient'] ?>;
+      padding: 1rem;
+      background: linear-gradient(135deg, #d4af37, #b8941f);
       color: #0f4c3a;
-      border: none;
+      border: 2px solid rgba(255, 255, 255, 0.2);
       border-radius: 15px;
-      font-size: 1.1rem;
-      font-weight: 600;
+      font-size: 1rem;
+      font-weight: 700;
       cursor: pointer;
-      transition: all 0.3s ease;
+      transition: all 0.4s ease;
       text-decoration: none;
       display: flex;
       align-items: center;
       justify-content: center;
       gap: 0.5rem;
+      box-shadow: 
+        0 8px 25px rgba(212, 175, 55, 0.4),
+        0 0 0 0 rgba(212, 175, 55, 0.7);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .book-button::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(135deg, #ffffff, rgba(255, 255, 255, 0.8));
+      border-radius: 15px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: -1;
     }
 
     .book-button:hover {
-      transform: translateY(-2px);
-      box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-      filter: brightness(1.1);
+      transform: translateY(-3px) scale(1.02);
+      box-shadow: 
+        0 15px 35px rgba(212, 175, 55, 0.5),
+        0 0 0 8px rgba(212, 175, 55, 0.3);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    .book-button:hover::before {
+      opacity: 0.1;
+    }
+
+    /* Floating Categories Elements */
+    .floating-categories-element {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.1), transparent);
+      border-radius: 50%;
+      animation: categoriesElementFloat 8s ease-in-out infinite;
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .floating-categories-element:nth-child(1) {
+      top: 15%;
+      left: 8%;
+      animation-delay: 0s;
+      background: radial-gradient(circle, rgba(255, 255, 255, 0.08), transparent);
+    }
+
+    .floating-categories-element:nth-child(2) {
+      top: 65%;
+      right: 12%;
+      animation-delay: 3s;
+      background: radial-gradient(circle, rgba(212, 175, 55, 0.06), transparent);
+    }
+
+    .floating-categories-element:nth-child(3) {
+      bottom: 25%;
+      left: 15%;
+      animation-delay: 6s;
+      background: radial-gradient(circle, rgba(45, 122, 95, 0.08), transparent);
+    }
+
+    @keyframes categoriesElementFloat {
+      0%, 100% { 
+        transform: translateY(0px) rotate(0deg) scale(1); 
+        opacity: 0.6;
+      }
+      25% { 
+        transform: translateY(-15px) rotate(2deg) scale(1.1); 
+        opacity: 0.8;
+      }
+      50% { 
+        transform: translateY(-8px) rotate(-1deg) scale(0.9); 
+        opacity: 0.7;
+      }
+      75% { 
+        transform: translateY(-12px) rotate(1deg) scale(1.05); 
+        opacity: 0.9;
+      }
     }
 
     /* Floating Elements */
@@ -471,16 +704,19 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
       
       .services-grid {
         grid-template-columns: 1fr;
-        gap: 2rem;
+        gap: 1.5rem;
       }
       
       .card-header {
-        height: 180px;
+        height: 100px;
       }
       
       .card-header .icon {
-        padding: 30px;
-        font-size: 3rem;
+        padding: 20px;
+      }
+      
+      .card-header .icon i {
+        font-size: 2rem;
       }
       
       .stats-grid {
@@ -518,14 +754,57 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
       opacity: 0.8;
       margin-bottom: 2rem;
     }
+
+    /* Enhanced service card animations */
+    .service-card {
+      animation: fadeInUp 0.6s ease-out;
+    }
+
+    @keyframes fadeInUp {
+      from {
+        opacity: 0;
+        transform: translateY(20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    /* Stagger animation for multiple cards */
+    .service-card:nth-child(1) { animation-delay: 0.1s; }
+    .service-card:nth-child(2) { animation-delay: 0.2s; }
+    .service-card:nth-child(3) { animation-delay: 0.3s; }
+    .service-card:nth-child(4) { animation-delay: 0.4s; }
+    .service-card:nth-child(5) { animation-delay: 0.5s; }
+    .service-card:nth-child(6) { animation-delay: 0.6s; }
+
+    /* Enhanced section titles */
+    .section-title h2 {
+      text-shadow: 2px 2px 4px rgba(0,0,0,0.3);
+      transition: transform 0.3s ease;
+    }
+
+    .section-title:hover h2 {
+      transform: scale(1.02);
+    }
+
+    /* Enhanced stats */
+    .stat-item {
+      transition: transform 0.3s ease;
+    }
+
+    .stat-item:hover {
+      transform: translateY(-5px);
+    }
   </style>
 </head>
 <body>
   <!-- Hero Section -->
   <section class="category-hero">
-    <div class="floating-element"></div>
-    <div class="floating-element"></div>
-    <div class="floating-element"></div>
+    <div class="floating-categories-element"></div>
+    <div class="floating-categories-element"></div>
+    <div class="floating-categories-element"></div>
     
     <div class="hero-content">
       <div class="category-icon">
@@ -571,7 +850,7 @@ $config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
           <?php while ($srv = $result->fetch_assoc()): ?>
             <div class="service-card">
               <div class="card-header">
-                <span class="icon"><?= mb_substr($srv['name'], 0, 1) ?></span>
+                <span class="icon"><i class="<?= getServiceIcon($srv['name']) ?>"></i></span>
               </div>
               <div class="card-body">
                 <h3><?= htmlspecialchars($srv['name']) ?></h3>
