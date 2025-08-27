@@ -182,6 +182,9 @@ while ($row = $statsResult->fetch_assoc()) {
                 <a href="admin_dashboard.php" class="btn btn-primary">
                     <i class="fas fa-tachometer-alt"></i> Quick Dashboard
                 </a>
+                         <a href="manage_categories.php" class="btn btn-primary">
+             <i class="fas fa-concierge-bell"></i> Manage Procedures
+         </a>
             </div>
         </div>
     </div>
@@ -304,7 +307,7 @@ while ($row = $statsResult->fetch_assoc()) {
             </div>
         </div>
 
-        <div class="table-container">
+        <div class="table-container" style="width: 100%; overflow-x: auto;">
             <table class="admin-table">
                 <thead>
                     <tr>
@@ -515,9 +518,16 @@ function getStatusBadge($status) {
 
 <style>
 /* Admin Panel Styles */
+.page-container {
+    max-width: 100vw;
+    width: 100%;
+    padding: 0 3rem;
+    margin: 0 auto;
+}
+
 .admin-hero {
     background: linear-gradient(135deg, rgba(15, 76, 58, 0.9) 0%, rgba(26, 95, 74, 0.9) 100%);
-    padding: 3rem 2rem;
+    padding: 2rem 1rem;
     text-align: center;
     margin-bottom: 2rem;
     border-radius: 20px;
@@ -567,7 +577,7 @@ function getStatusBadge($status) {
 .stats-container {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-    gap: 1.5rem;
+    gap: 1rem;
     margin-bottom: 2rem;
 }
 
@@ -575,7 +585,7 @@ function getStatusBadge($status) {
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(212, 175, 55, 0.3);
     border-radius: 15px;
-    padding: 1.5rem;
+    padding: 1rem;
     display: flex;
     align-items: center;
     gap: 1rem;
@@ -617,21 +627,23 @@ function getStatusBadge($status) {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(212, 175, 55, 0.2);
     border-radius: 15px;
-    padding: 1.5rem;
+    padding: 1rem;
     margin-bottom: 2rem;
 }
 
 .filters-form {
     display: flex;
     flex-wrap: wrap;
-    gap: 1rem;
+    gap: 0.5rem;
     align-items: end;
+    width: 100%;
 }
 
 .filter-group {
     display: flex;
     flex-direction: column;
     gap: 0.5rem;
+    flex: 3;
 }
 
 .filter-group label {
@@ -647,7 +659,8 @@ function getStatusBadge($status) {
     border-radius: 8px;
     background: rgba(255, 255, 255, 0.1);
     color: #f8f9fa;
-    min-width: 150px;
+    min-width: 0;
+    flex: 2;
 }
 
 /* Make dropdown options more visible */
@@ -698,6 +711,13 @@ function getStatusBadge($status) {
     box-shadow: 0 5px 15px rgba(0,0,0,0.2);
 }
 
+/* Ensure filter fields expand to fill available space */
+.filter-group select,
+.filter-group input {
+    width: 100%;
+    box-sizing: border-box;
+}
+
 /* Messages */
 .message {
     padding: 1rem 1.5rem;
@@ -725,7 +745,10 @@ function getStatusBadge($status) {
     background: rgba(255, 255, 255, 0.05);
     border: 1px solid rgba(212, 175, 55, 0.2);
     border-radius: 15px;
-    padding: 1.5rem;
+    padding: 1rem;
+    width: 100%;
+    max-width: 100%;
+    margin: 0;
 }
 
 .table-header {
@@ -791,6 +814,8 @@ function getStatusBadge($status) {
     background: rgba(255, 255, 255, 0.1);
     border-radius: 10px;
     overflow: hidden;
+    table-layout: auto;
+    min-width: 100%;
 }
 
 .admin-table th {
@@ -827,7 +852,7 @@ function getStatusBadge($status) {
 .service-info strong { color: #d4af37; }
 
 .datetime .date { font-weight: 600; color: #d4af37; }
-.datetime .time { color: #6c757d; font-size: 0.9rem; }
+.datetime .time { color: #d4af37; font-size: 0.9rem; }
 
 .end-time .time { 
     color: #e74c3c; 
@@ -962,6 +987,7 @@ function getStatusBadge($status) {
     .filter-group select,
     .filter-group input {
         min-width: auto;
+        flex: none;
     }
 }
 

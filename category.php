@@ -4,7 +4,7 @@ require_once "db.php";
 
 $cat_id = isset($_GET['id']) ? (int)$_GET['id'] : 0;
 
-// вземаме името на категорията
+// вземаме данните на категорията
 $stmt = $mysqli->prepare("SELECT name FROM service_categories WHERE id=?");
 $stmt->bind_param("i", $cat_id);
 $stmt->execute();
@@ -91,11 +91,21 @@ $categoryConfig = [
         'color' => '#00bcd4',
         'gradient' => 'linear-gradient(135deg, #00bcd4, #0097a7)',
         'description' => 'Dive into relaxation with our aqua therapy and pool services',
-        'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'aqua\' x=\'0\' y=\'0\' width=\'60\' height=\'60\' patternUnits=\'userSpaceOnUse\'<path d=\'M10 30 Q30 20 50 30 Q70 40 90 30\' stroke=\'%2300bcd4\' stroke-width=\'1\' fill=\none\' opacity=\'0.3\'/><circle cx=\'30\' cy=\'50\' r=\'1.5\' fill=\'%2300bcd4\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23aqua)\'/></svg>")'
+        'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'aqua\' x=\'0\' y=\'0\' width=\'60\' height=\'60\' patternUnits=\'userSpaceOnUse\'><path d=\'M10 30 Q30 20 50 30 Q70 40 90 30\' stroke=\'%2300bcd4\' stroke-width=\'1\' fill=\'none\' opacity=\'0.3\'/><circle cx=\'30\' cy=\'50\' r=\'1.5\' fill=\'%2300bcd4\' opacity=\'0.2\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23aqua)\'/></svg>")'
     ]
 ];
 
-$config = $categoryConfig[$cat_id] ?? $categoryConfig[1];
+// Use database values if available, otherwise fall back to hardcoded config
+$config = [
+    'name' => $cat_name,
+    'icon' => 'fas fa-spa',
+    'color' => '#d4af37',
+    'gradient' => 'linear-gradient(135deg, #d4af37, #b8941f)',
+    'description' => 'Experience our premium services in this category',
+    'bgPattern' => 'url("data:image/svg+xml,<svg xmlns=\'http://www.w3.org/2000/svg\' viewBox=\'0 0 100 100\'><defs><pattern id=\'category\' x=\'0\' y=\'0\' width=\'50\' height=\'50\' patternUnits=\'userSpaceOnUse\'><circle cx=\'25\' cy=\'25\' r=\'2\' fill=\'#d4af37\' opacity=\'0.3\'/></pattern></defs><rect width=\'100\' height=\'100\' fill=\'url(%23category)\'/></svg>")'
+];
+
+
 ?>
 <!DOCTYPE html>
 <html lang="bg">

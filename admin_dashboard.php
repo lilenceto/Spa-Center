@@ -164,13 +164,15 @@ $mysqli->close();
                 <p>Create new spa services and treatments</p>
             </a>
             
-            <a href="category.php" class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-tags"></i>
-                </div>
-                <h3>Manage Categories</h3>
-                <p>Organize services into categories</p>
-            </a>
+                   <a href="manage_categories.php" class="action-card">
+           <div class="action-icon">
+               <i class="fas fa-concierge-bell"></i>
+           </div>
+           <h3>Manage Procedures</h3>
+           <p>Add, edit, and manage spa procedures</p>
+       </a>
+            
+            
         </div>
     </div>
 
