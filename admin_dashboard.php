@@ -156,13 +156,7 @@ $mysqli->close();
                 <p>See all reservations in the system</p>
             </a>
             
-            <a href="add_service.php" class="action-card">
-                <div class="action-icon">
-                    <i class="fas fa-plus-circle"></i>
-                </div>
-                <h3>Add New Service</h3>
-                <p>Create new spa services and treatments</p>
-            </a>
+            
             
                    <a href="manage_categories.php" class="action-card">
            <div class="action-icon">
