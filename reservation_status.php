@@ -211,6 +211,45 @@ if ($action === 'cancel') {
     
     if ($updateStmt->execute()) {
         $updateStmt->close();
+        
+        // Send email notification about status change
+        require_once "email_helper_working.php";
+        $emailHelper = new EmailHelperWorking();
+        
+        // Get reservation details for email
+        $stmt = $mysqli->prepare("
+            SELECT r.reservation_date, r.reservation_time, s.name as service_name, s.duration, 
+                   u.name as user_name, u.email as user_email, e.name as employee_name
+            FROM reservations r
+            JOIN services s ON s.id = r.service_id
+            JOIN users u ON u.id = r.user_id
+            LEFT JOIN employees e ON e.id = r.employee_id
+            WHERE r.id = ?
+        ");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            $reservation_data = [
+                'service_name' => $row['service_name'],
+                'date' => $row['reservation_date'],
+                'time' => $row['reservation_time'],
+                'duration' => $row['duration'],
+                'employee_name' => $row['employee_name']
+            ];
+            
+            // Send status update email
+            $emailHelper->sendStatusUpdate(
+                $row['user_email'], 
+                $row['user_name'], 
+                $reservation_data, 
+                'Awaiting', 
+                'Approved'
+            );
+        }
+        $stmt->close();
+        
         $mysqli->close();
         
         error_log("Reservation approved successfully: ID=$id");
@@ -265,6 +304,43 @@ if ($action === 'cancel') {
     
     if ($updateStmt->execute()) {
         $updateStmt->close();
+        
+        // Send email notification about cancellation
+        require_once "email_helper_working.php";
+        $emailHelper = new EmailHelperWorking();
+        
+        // Get reservation details for email
+        $stmt = $mysqli->prepare("
+            SELECT r.reservation_date, r.reservation_time, s.name as service_name, s.duration, 
+                   u.name as user_name, u.email as user_email, e.name as employee_name
+            FROM reservations r
+            JOIN services s ON s.id = r.service_id
+            JOIN users u ON u.id = r.user_id
+            LEFT JOIN employees e ON e.id = r.employee_id
+            WHERE r.id = ?
+        ");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            $reservation_data = [
+                'service_name' => $row['service_name'],
+                'date' => $row['reservation_date'],
+                'time' => $row['reservation_time'],
+                'duration' => $row['duration'],
+                'employee_name' => $row['employee_name']
+            ];
+            
+            // Send cancellation confirmation email
+            $emailHelper->sendCancellationConfirmation(
+                $row['user_email'], 
+                $row['user_name'], 
+                $reservation_data
+            );
+        }
+        $stmt->close();
+        
         $mysqli->close();
         
         error_log("Reservation rejected successfully: ID=$id");
@@ -330,6 +406,44 @@ if ($action === 'cancel') {
             $historyStmt->execute();
             $historyStmt->close();
         }
+        
+        // Send email notification about status change
+        require_once "email_helper_working.php";
+        $emailHelper = new EmailHelperWorking();
+        
+        // Get reservation details for email
+        $stmt = $mysqli->prepare("
+            SELECT r.reservation_date, r.reservation_time, s.name as service_name, s.duration, 
+                   u.name as user_name, u.email as user_email, e.name as employee_name
+            FROM reservations r
+            JOIN services s ON s.id = r.service_id
+            JOIN users u ON u.id = r.user_id
+            LEFT JOIN employees e ON e.id = r.employee_id
+            WHERE r.id = ?
+        ");
+        $stmt->bind_param("i", $id);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        
+        if ($row = $result->fetch_assoc()) {
+            $reservation_data = [
+                'service_name' => $row['service_name'],
+                'date' => $row['reservation_date'],
+                'time' => $row['reservation_time'],
+                'duration' => $row['duration'],
+                'employee_name' => $row['employee_name']
+            ];
+            
+            // Send status update email
+            $emailHelper->sendStatusUpdate(
+                $row['user_email'], 
+                $row['user_name'], 
+                $reservation_data, 
+                $oldStatus, 
+                $newStatus
+            );
+        }
+        $stmt->close();
         
         $updateStmt->close();
         $mysqli->close();

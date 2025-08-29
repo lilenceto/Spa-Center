@@ -214,6 +214,49 @@ if ($stmt->execute()) {
     
     $stmt->close();
     
+    // Send email confirmation
+    require_once "email_helper_working.php";
+    $emailHelper = new EmailHelperWorking();
+    
+    // Get user details
+    $stmt3 = $mysqli->prepare("SELECT name, email FROM users WHERE id = ?");
+    $stmt3->bind_param("i", $user_id);
+    $stmt3->execute();
+    $stmt3->bind_result($user_name, $user_email);
+    $stmt3->fetch();
+    $stmt3->close();
+    
+    // Get service details
+    $stmt4 = $mysqli->prepare("SELECT name, duration FROM services WHERE id = ?");
+    $stmt4->bind_param("i", $service_id);
+    $stmt4->execute();
+    $stmt4->bind_result($service_name, $service_duration);
+    $stmt4->fetch();
+    $stmt4->close();
+    
+    // Get employee name if assigned
+    $employee_name = null;
+    if ($employee_id) {
+        $stmt5 = $mysqli->prepare("SELECT name FROM employees WHERE id = ?");
+        $stmt5->bind_param("i", $employee_id);
+        $stmt5->execute();
+        $stmt5->bind_result($employee_name);
+        $stmt5->fetch();
+        $stmt5->close();
+    }
+    
+    // Prepare reservation data for email
+    $reservation_data = [
+        'service_name' => $service_name,
+        'date' => $reservation_date,
+        'time' => $reservation_time,
+        'duration' => $service_duration,
+        'employee_name' => $employee_name
+    ];
+    
+    // Send confirmation email
+    $emailHelper->sendReservationConfirmation($user_email, $user_name, $reservation_data);
+    
     // Redirect to success page or show success message
     header("Location: reservations.php?success=1");
     exit;
