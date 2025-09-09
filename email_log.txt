@@ -36,3 +36,10 @@
 2025-08-29 15:40:18 | To: lilid0911@gmail.com | Subject: Промяна в статуса на резервация - Spa Center | Status: success
 2025-08-29 15:41:12 | To: lilid0911@gmail.com | Subject: Потвърждение на резервация - Spa Center | Status: success
 2025-08-29 15:41:48 | To: lilid0911@gmail.com | Subject: Промяна в статуса на резервация - Spa Center | Status: success
+2025-09-09 21:37:44 | To: lilid0911@gmail.com | Subject: Потвърждение на резервация - Spa Center | Status: success
+2025-09-09 21:38:43 | To: lilid0911@gmail.com | Subject: Промяна в статуса на резервация - Spa Center | Status: success
+2025-09-09 21:55:48 | To: 123@gmail.com | Subject: Потвърждение на резервация - Spa Center | Status: success
+2025-09-09 21:58:08 | To: 123@gmail.com | Subject: Промяна в статуса на резервация - Spa Center | Status: success
+2025-09-09 22:08:35 | To: 123@gmail.com | Subject: Промяна в статуса на резервация - Spa Center | Status: success
+2025-09-09 22:08:54 | To: lilid0911@gmail.com | Subject: Потвърждение на резервация - Spa Center | Status: success
+2025-09-09 22:09:23 | To: lilid0911@gmail.com | Subject: Промяна в статуса на резервация - Spa Center | Status: success

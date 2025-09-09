@@ -15,18 +15,13 @@ if ($mysqli->connect_error) {
 }
 
 // Check if user has admin role
-$stmt = $mysqli->prepare("
-    SELECT COUNT(*) as is_admin 
-    FROM user_roles ur 
-    JOIN roles r ON ur.role_id = r.id 
-    WHERE ur.user_id = ? AND r.name = 'admin'
-");
+$stmt = $mysqli->prepare("SELECT role FROM users WHERE id = ?");
 $stmt->bind_param("i", $_SESSION['user_id']);
 $stmt->execute();
 $result = $stmt->get_result();
 $row = $result->fetch_assoc();
 
-$isAdmin = $row['is_admin'] > 0;
+$isAdmin = ($row['role'] === 'admin');
 
 $stmt->close();
 $mysqli->close();

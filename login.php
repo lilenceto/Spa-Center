@@ -19,15 +19,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
         $error = "Невалиден имейл!";
     } else {
-        // Вземаме потребител + роля чрез JOIN
-        $sql = "
-            SELECT u.id, u.name, u.password, r.name AS role
-            FROM users u
-            JOIN user_roles ur ON ur.user_id = u.id
-            JOIN roles r ON r.id = ur.role_id
-            WHERE u.email = ?
-            LIMIT 1
-        ";
+        // Вземаме потребител с роля от users таблицата
+        $sql = "SELECT id, name, password, role FROM users WHERE email = ? LIMIT 1";
         $stmt = $mysqli->prepare($sql);
         $stmt->bind_param("s", $email);
         $stmt->execute();

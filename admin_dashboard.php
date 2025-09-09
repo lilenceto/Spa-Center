@@ -14,18 +14,13 @@ if ($mysqli->connect_error) {
     die("Database connection error: " . $mysqli->connect_error);
 }
 
-$adminCheckStmt = $mysqli->prepare("
-    SELECT COUNT(*) as is_admin 
-    FROM user_roles ur 
-    JOIN roles r ON ur.role_id = r.id 
-    WHERE ur.user_id = ? AND r.name = 'admin'
-");
+$adminCheckStmt = $mysqli->prepare("SELECT role FROM users WHERE id = ?");
 $adminCheckStmt->bind_param("i", $_SESSION['user_id']);
 $adminCheckStmt->execute();
 $adminResult = $adminCheckStmt->get_result();
 $adminCheck = $adminResult->fetch_assoc();
 
-if ($adminCheck['is_admin'] == 0) {
+if ($adminCheck['role'] !== 'admin') {
     $adminCheckStmt->close();
     $mysqli->close();
     header("Location: login.php?next=admin_dashboard.php");
